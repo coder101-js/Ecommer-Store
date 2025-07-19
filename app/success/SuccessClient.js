@@ -5,9 +5,14 @@ import { useCart } from "../context/CartContext";
 
 export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
-  clearCart();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center">
+    <div
+      className="flex flex-col items-center justify-center min-h-screen text-center"
+      onLoad={() => {
+        clearCart;
+      }}
+    >
       <h1 className="text-3xl font-bold text-green-600">
         ✅ Payment Successful!
       </h1>
