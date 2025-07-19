@@ -11,8 +11,7 @@ const page = () => {
 
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="bg-white dark:bg-[#1e1e1e] p-8 rounded-lg shadow-lg w-full max-w-md">
-          {/* <h1 className="text-2xl font-bold mb-4">Sign in to your account</h1> */}
-          <h1 className="text-2xl font-bold mb-4">Work under progress!</h1>
+          <h1 className="text-2xl font-bold mb-4">Sign in to your </h1>
         </div>
       </div>
       <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320">
