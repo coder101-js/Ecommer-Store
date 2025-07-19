@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useCart } from "../context/CartContext";
 
 export default function SuccessClient({ name }) {
+  const { clearCart } = useCart();
+  clearCart();
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
       <h1 className="text-3xl font-bold text-green-600">

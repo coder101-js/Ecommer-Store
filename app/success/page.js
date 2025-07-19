@@ -33,6 +33,6 @@ export default async function SuccessPage({ searchParams }) {
   if (!payload) {
     redirect("/");
   }
-
+  
   return <SuccessClient name={payload.name || "customer"} />;
 }
