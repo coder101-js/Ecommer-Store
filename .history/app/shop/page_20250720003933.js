@@ -4,8 +4,7 @@ import { Suspense } from "react";
 import ShopClient from "./ShopClient";
 
 export default function ShopPage() {
-  const {clearCart} = useCart();
-  clearCart()
+  const {clearCa}
   return (
     <Suspense fallback={<div className="text-center pt-20">Loading shop...</div>}>
       <ShopClient />

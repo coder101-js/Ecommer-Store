@@ -37,7 +37,7 @@ export async function POST(req) {
       quantity: item.quantity,
     })),
     mode: "payment",
-    success_url: successUrl, // ✅ token already included
+    success_url: successUrl, 
     cancel_url: "https://boltform.buttnetworks.com/cart",
   });
 

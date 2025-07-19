@@ -22,7 +22,7 @@ export async function POST(req) {
     name: body.name || "customer",
   });
 
-  const successUrl = `https://boltform.buttnetworks.com//success?token=${token}`; // ✅ Not empty
+  const successUrl = `https://boltform.buttnetworks.com/success?token=${token}`; // ✅ Not empty
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],

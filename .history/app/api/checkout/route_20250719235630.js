@@ -22,7 +22,7 @@ export async function POST(req) {
     name: body.name || "customer",
   });
 
-  const successUrl = `http://localhost:3000/success?token=${token}`; // ✅ Not empty
+  const successUrl = `https://boltform.buttnetworks.com/success?token=${token}`; // ✅ Not empty
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
@@ -37,8 +37,8 @@ export async function POST(req) {
       quantity: item.quantity,
     })),
     mode: "payment",
-    success_url: successUrl, // ✅ token already included
-    cancel_url: "http://:3000/cart",
+    success_url: successUrl, 
+    cancel_url: "https://boltform.buttnetworks.com/cart",
   });
 
   return NextResponse.json({ url: session.url });
