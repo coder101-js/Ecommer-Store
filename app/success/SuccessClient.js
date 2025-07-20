@@ -10,7 +10,7 @@ export default function SuccessClient({ name }) {
     <div
       className="flex flex-col items-center justify-center min-h-screen text-center"
       onLoad={() => {
-        clearCart;
+        clearCart();
       }}
     >
       <h1 className="text-3xl font-bold text-green-600">
