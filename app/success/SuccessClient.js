@@ -1,18 +1,18 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 
 export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
 
+  useEffect(() => {
+    clearCart(); // 💥 This runs when the component mounts
+  }, []);
+
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen text-center"
-      onLoad={() => {
-        clearCart();
-      }}
-    >
+    <div className="flex flex-col items-center justify-center min-h-screen text-center">
       <h1 className="text-3xl font-bold text-green-600">
         ✅ Payment Successful!
       </h1>
