@@ -8,7 +8,7 @@ export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    clearCart(); // 💥 This runs when the component mounts
+    clearCart(); 
   }, []);
 
   return (
