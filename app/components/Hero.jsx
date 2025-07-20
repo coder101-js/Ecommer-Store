@@ -45,19 +45,20 @@ export default function Hero() {
 
   return (
     <section
-      className="w-full 
+      className="w-full min-h-screen
       bg-gradient-to-r from-[#b8b6b6] via-[#91c9e3] to-[#6eaae7]
       dark:from-[#0f0c29] dark:via-[#302b63] dark:to-[#24243e]
       text-black dark:text-white 
-      pt-16 pb-32 px-4 md:px-12 
-      transition-colors duration-500"
+      px-4 md:px-12 pt-16 pb-12 md:pb-32
+      flex items-center transition-colors duration-500"
     >
-      <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12 w-full">
+        {/* Left Text Content */}
         <div className="flex-1 space-y-6 text-center md:text-left">
           <p className="text-lg font-medium text-gray-800 dark:text-gray-400 tracking-wide">
             Engineered for Speed
           </p>
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-pink-600 via-red-500 to-yellow-500 bg-clip-text  text-black dark:text-white">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight bg-gradient-to-r from-pink-600 via-red-500 to-yellow-500 bg-clip-text text-transparent">
             Bolt Into the Future
             <br />
             with{" "}
@@ -67,19 +68,20 @@ export default function Hero() {
             Step into lightning-fast comfort, built for every move.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 mt-6">
-            <button className="text-white dark:bg-white bg-blue-700 dark:text-black px-6 py-3 rounded-full font-semibold hover:scale-105 hover:shadow-xl transition-all">
-              <Link href="/shop" className="hover:underline ">
+            <Link href="/shop">
+              <button className="text-white dark:bg-white bg-blue-700 dark:text-black px-6 py-3 rounded-full font-semibold hover:scale-105 hover:shadow-xl transition-all">
                 ⚡ Shop Now
-              </Link>
-            </button>
-            <button className="text-blue-700 dark:text-blue-400 font-medium hover:underline transition">
-              <Link href="/shop" className="hover:underline ">
+              </button>
+            </Link>
+            <Link href="/shop">
+              <button className="text-blue-700 dark:text-blue-400 font-medium hover:underline transition">
                 Explore Collection
-              </Link>
-            </button>
+              </button>
+            </Link>
           </div>
         </div>
 
+        {/* Right Shoe Image Section */}
         <div className="flex-1 flex flex-col items-center m-6">
           <div
             className="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] md:w-[400px] md:h-[400px] rounded-full flex items-center justify-center transition-all duration-500 shadow-2xl"
