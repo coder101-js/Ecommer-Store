@@ -18,14 +18,14 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { useSession, signOut } from "next-auth/react"; // 🆕 added
+import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathName = usePathname();
   const router = useRouter();
 
-  const { data: session } = useSession(); // 🆕 session hook
+  const { data: session } = useSession(); // 👈 pulls current user session
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cart } = useCart();
@@ -92,6 +92,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 sm:space-x-4 justify-end">
+            {/* Cart */}
             <motion.div whileTap={{ scale: 0.9 }} className="relative">
               <Link href="/cart">
                 <ShoppingCartIcon className="h-6 w-6 text-black dark:text-white" />
@@ -103,7 +104,7 @@ export default function Navbar() {
               </Link>
             </motion.div>
 
-            {/* 🔐 Show user profile or Sign In */}
+            {/* 🔐 Auth Status */}
             {session ? (
               <div className="relative group">
                 <img
@@ -134,7 +135,7 @@ export default function Navbar() {
               </motion.div>
             )}
 
-            {/* Theme Toggle */}
+            {/* Theme toggle */}
             {mounted && (
               <motion.button
                 onClick={toggleTheme}
@@ -166,7 +167,7 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Nav Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div

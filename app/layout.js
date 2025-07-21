@@ -2,10 +2,11 @@ import "./globals.css";
 import "./tailwind-out.css";
 import { ThemeProvider } from "next-themes";
 import { Geist, Geist_Mono } from "next/font/google";
-import Navbar from "./components/Navbar";
+import NavbarWrapper from "./components/NavbarWrapper"; // ✅ wrapped version
 import { CartProvider } from "./context/CartContext";
 import { Toaster } from "react-hot-toast";
 import SessionWrapper from "./providers/SessionWrapper";
+
 const geistSans = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
@@ -33,7 +34,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <header className="max-h-screen overflow-hidden">
               <nav>
-                <Navbar />
+                <NavbarWrapper /> {/* ✅ dynamic safe version */}
               </nav>
             </header>
             <main>
