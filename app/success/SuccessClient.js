@@ -8,7 +8,8 @@ export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    clearCart(); 
+    localStorage.removeItem("cart");
+    clearCart();
   }, []);
 
   return (
