@@ -9,7 +9,7 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt", // or "database" if you want to store sessions in DB
+    strategy: "jwt", 
   },
   callbacks: {
     async jwt({ token, account, profile }) {
