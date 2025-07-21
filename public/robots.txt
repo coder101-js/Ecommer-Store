@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://boltform.buttnetworks.com
+
+# Sitemaps
+Sitemap: https://boltform.buttnetworks.com/sitemap.xml

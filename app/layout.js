@@ -31,17 +31,22 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <CartProvider>
-            <header className="max-h-screen overflow-hidden">
-              <nav>
-                <NavbarWrapper /> {/* ✅ dynamic safe version */}
-              </nav>
-            </header>
-            <main>
-              <Toaster position="top-right" />
-              <SessionWrapper>{children}</SessionWrapper>
-            </main>
-          </CartProvider>
+          <SessionWrapper>
+            {" "}
+            {/* ✅ MOVE THIS UP */}
+            <CartProvider>
+              <header className="max-h-screen overflow-hidden">
+                <nav>
+                  <NavbarWrapper />{" "}
+                  {/* now safely inside the Session context */}
+                </nav>
+              </header>
+              <main>
+                <Toaster position="top-right" />
+                {children}
+              </main>
+            </CartProvider>
+          </SessionWrapper>
         </ThemeProvider>
       </body>
     </html>
