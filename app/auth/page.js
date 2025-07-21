@@ -32,7 +32,7 @@ export default function LoginPage() {
           className="flex items-center justify-center gap-3 w-full py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition"
         >
           <Image
-            src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+            src="/google.png"
             alt="Google icon"
             width={20}
             height={20}
