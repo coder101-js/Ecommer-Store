@@ -18,12 +18,14 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
+import { useSession, signOut } from "next-auth/react"; // 🆕 added
 
 export default function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const pathName = usePathname();
   const router = useRouter();
 
+  const { data: session } = useSession(); // 🆕 session hook
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { cart } = useCart();
@@ -101,14 +103,36 @@ export default function Navbar() {
               </Link>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.05 }}>
-              <Link
-                href="/auth"
-                className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-700 text-white hover:bg-blue-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 transition"
-              >
-                Sign In
-              </Link>
-            </motion.div>
+            {/* 🔐 Show user profile or Sign In */}
+            {session ? (
+              <div className="relative group">
+                <img
+                  src={session.user.image}
+                  alt={session.user.name}
+                  className="h-8 w-8 rounded-full object-cover border-2 border-blue-700 dark:border-white cursor-pointer"
+                />
+                <div className="absolute hidden group-hover:flex flex-col bg-white dark:bg-neutral-900 shadow-lg right-0 mt-2 p-2 rounded-md text-sm z-50">
+                  <p className="px-3 py-1 text-gray-700 dark:text-gray-200">
+                    {session.user.name}
+                  </p>
+                  <button
+                    onClick={() => signOut()}
+                    className="px-3 py-1 text-left text-red-500 hover:underline"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <motion.div whileHover={{ scale: 1.05 }}>
+                <Link
+                  href="/auth"
+                  className="px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-700 text-white hover:bg-blue-800 dark:bg-white dark:text-black dark:hover:bg-gray-100 transition"
+                >
+                  Sign In
+                </Link>
+              </motion.div>
+            )}
 
             {/* Theme Toggle */}
             {mounted && (
