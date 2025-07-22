@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://boltform.buttnetworks.com/auth</loc><lastmod>2025-07-21T10:08:05.718Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://boltform.buttnetworks.com/cart</loc><lastmod>2025-07-21T10:08:05.720Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://boltform.buttnetworks.com/checkout/start</loc><lastmod>2025-07-21T10:08:05.720Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://boltform.buttnetworks.com</loc><lastmod>2025-07-21T10:08:05.720Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://boltform.buttnetworks.com/privacy-policy</loc><lastmod>2025-07-21T10:08:05.720Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://boltform.buttnetworks.com/shop</loc><lastmod>2025-07-21T10:08:05.721Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com/auth</loc><lastmod>2025-07-21T10:10:20.616Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com/cart</loc><lastmod>2025-07-21T10:10:20.617Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com/checkout/start</loc><lastmod>2025-07-21T10:10:20.618Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com</loc><lastmod>2025-07-21T10:10:20.618Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com/privacy-policy</loc><lastmod>2025-07-21T10:10:20.618Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://boltform.buttnetworks.com/shop</loc><lastmod>2025-07-21T10:10:20.618Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

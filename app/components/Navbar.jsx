@@ -12,27 +12,22 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import {
-  motion,
-  AnimatePresence,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
+  const { data: session } = useSession();
   const pathName = usePathname();
   const router = useRouter();
+  const { cart } = useCart();
 
-  const { data: session } = useSession(); // 👈 pulls current user session
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { cart } = useCart();
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const [navLinks, setNavLinks] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const { scrollY } = useScroll();
   const height = useTransform(scrollY, [0, 80], ["80px", "60px"]);
   const fontSize = useTransform(scrollY, [0, 80], ["1.75rem", "1.5rem"]);
@@ -57,13 +52,15 @@ export default function Navbar() {
     <>
       <motion.nav
         style={{ height }}
-        className="fixed top-0 left-0 w-full z-50 bg-white dark:bg-black border-b border-gray-200 dark:border-neutral-800 backdrop-blur transition-colors mb-4"
+        className={`fixed top-0 left-0 w-full z-50 transition-colors border-b
+          bg-white/90 dark:bg-[#0b0b0b]/80 backdrop-blur-md
+          border-gray-200 dark:border-neutral-800`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-full">
           {/* Logo */}
           <motion.div
             style={{ fontSize }}
-            className="font-extrabold tracking-tight text-black dark:text-white select-none"
+            className="font-extrabold tracking-tight text-black dark:text-white"
           >
             <Link href="/">BOLT</Link>
           </motion.div>
@@ -74,15 +71,15 @@ export default function Navbar() {
               <motion.div
                 key={link}
                 whileHover={{ scale: 1.1 }}
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white"
               >
                 <Link
                   href={
                     link === "Men"
                       ? "/shop?category=mens-shoes"
                       : link === "Women"
-                      ? "/shop?category=womens-shoes"
-                      : `/${link.toLowerCase().replace(/ /g, "-")}`
+                        ? "/shop?category=womens-shoes"
+                        : `/${link.toLowerCase()}`
                   }
                 >
                   {link}
@@ -91,9 +88,10 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 sm:space-x-4 justify-end">
-            {/* Cart */}
-            <motion.div whileTap={{ scale: 0.9 }} className="relative">
+          {/* Right side controls */}
+          <div className="flex items-center gap-3">
+            {/* Cart Icon */}
+            <motion.div whileTap={{ scale: 0.95 }} className="relative">
               <Link href="/cart">
                 <ShoppingCartIcon className="h-6 w-6 text-black dark:text-white" />
                 {cartCount > 0 && (
@@ -104,7 +102,7 @@ export default function Navbar() {
               </Link>
             </motion.div>
 
-            {/* 🔐 Auth Status */}
+            {/* Auth */}
             {session ? (
               <div className="relative group">
                 <img
@@ -139,7 +137,7 @@ export default function Navbar() {
             {mounted && (
               <motion.button
                 onClick={toggleTheme}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800"
                 aria-label="Toggle Theme"
                 whileTap={{ rotate: 20 }}
               >
@@ -151,7 +149,7 @@ export default function Navbar() {
               </motion.button>
             )}
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="md:hidden p-2"
@@ -167,14 +165,14 @@ export default function Navbar() {
         </div>
       </motion.nav>
 
-      {/* Mobile Nav Menu */}
+      {/* Mobile Nav */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-white dark:bg-black z-40 flex flex-col items-center justify-center space-y-6"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="fixed inset-0 bg-white dark:bg-[#0b0b0b] z-40 flex flex-col items-center justify-center space-y-6"
           >
             {navLinks.map((link) => (
               <motion.div key={link} whileHover={{ scale: 1.1 }}>
@@ -183,8 +181,8 @@ export default function Navbar() {
                     link === "Men"
                       ? "/shop?category=mens-shoes"
                       : link === "Women"
-                      ? "/shop?category=womens-shoes"
-                      : `/${link.toLowerCase().replace(/ /g, "-")}`
+                        ? "/shop?category=womens-shoes"
+                        : `/${link.toLowerCase()}`
                   }
                   className="text-2xl font-semibold text-gray-800 dark:text-gray-200"
                   onClick={() => setMobileOpen(false)}
@@ -196,7 +194,7 @@ export default function Navbar() {
             <motion.div whileTap={{ scale: 0.9 }}>
               <Link
                 href="/auth"
-                className="px-6 py-2 bg-black text-white rounded-full font-semibold"
+                className="px-6 py-2 bg-black text-white rounded-full font-semibold dark:bg-white dark:text-black"
                 onClick={() => setMobileOpen(false)}
               >
                 Sign In
