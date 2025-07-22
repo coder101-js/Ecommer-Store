@@ -102,26 +102,28 @@ export default function Navbar() {
               </Link>
             </motion.div>
 
-            {/* Auth */}
             {session ? (
               <div className="relative group">
                 <img
                   src={session.user.image}
                   alt={session.user.name}
-                  className="h-8 w-8 rounded-full object-cover border-2 border-blue-700 dark:border-white cursor-pointer"
+                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-blue-700 dark:border-white cursor-pointer"
                 />
-                <div className="absolute hidden group-hover:flex flex-col bg-white dark:bg-neutral-900 shadow-lg right-0 mt-2 p-2 rounded-md text-sm z-50">
-                  <p className="px-3 py-1 text-gray-700 dark:text-gray-200">
+                <div
+                  className="absolute hidden group-hover:flex flex-col bg-white dark:bg-neutral-900 shadow-xl right-0 mt-3 p-3 rounded-md text-sm z-50 min-w-[180px] sm:min-w-[220px] transition-all duration-200 ease-in-out"
+                >
+                  <p className="px-3 py-1 text-gray-700 dark:text-gray-200 font-medium truncate">
                     {session.user.name}
                   </p>
                   <button
                     onClick={() => signOut()}
-                    className="px-3 py-1 text-left text-red-500 hover:underline"
+                    className="px-3 py-1 text-left text-red-500 hover:underline transition"
                   >
                     Sign Out
                   </button>
                 </div>
               </div>
+
             ) : (
               <motion.div whileHover={{ scale: 1.05 }}>
                 <Link
