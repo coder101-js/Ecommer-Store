@@ -5,7 +5,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "cdn.dummyjson.com",
-        pathname: "/product-images/**", // adjust this if needed
+        pathname: "/**", // Allow all paths from this host
       },
     ],
   },
