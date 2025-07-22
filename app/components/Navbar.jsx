@@ -103,14 +103,16 @@ export default function Navbar() {
             </motion.div>
 
             {session ? (
-              <div className="relative group">
+              <div className="relative">
                 <img
                   src={session.user.image}
                   alt={session.user.name}
-                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-blue-700 dark:border-white cursor-pointer"
+                  className="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover border-2 border-blue-700 dark:border-white cursor-pointer peer"
                 />
                 <div
-                  className="absolute hidden group-hover:flex flex-col bg-white dark:bg-neutral-900 shadow-xl right-0 mt-3 p-3 rounded-md text-sm z-50 min-w-[180px] sm:min-w-[220px] transition-all duration-200 ease-in-out"
+                  className="absolute invisible peer-hover:visible hover:visible opacity-0 peer-hover:opacity-100 hover:opacity-100
+               flex flex-col bg-white dark:bg-neutral-900 shadow-xl right-0 mt-2 p-3 rounded-md text-sm z-50
+               min-w-[180px] sm:min-w-[220px] transition-all duration-150 ease-in-out pointer-events-auto"
                 >
                   <p className="px-3 py-1 text-gray-700 dark:text-gray-200 font-medium truncate">
                     {session.user.name}
@@ -123,6 +125,7 @@ export default function Navbar() {
                   </button>
                 </div>
               </div>
+
 
             ) : (
               <motion.div whileHover={{ scale: 1.05 }}>
