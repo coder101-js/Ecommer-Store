@@ -14,11 +14,14 @@ export const CartProvider = ({ children }) => {
   // Load cart from MongoDB or localStorage
   useEffect(() => {
     const loadCart = async () => {
+      console.log("🛒 [loadCart] Session status:", status);
       if (status === "loading") return;
 
       if (session?.user) {
+        console.log("✅ Logged in as:", session.user.email);
         try {
           const res = await axios.get("/api/save?type=cart");
+          console.log("📥 Cart loaded from DB:", res.data.items);
           setCart(res.data.items || []);
         } catch (err) {
           console.error("❌ Failed to load cart from DB:", err.message);
@@ -26,6 +29,7 @@ export const CartProvider = ({ children }) => {
         }
       } else {
         const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+        console.log("📥 Cart loaded from localStorage:", savedCart);
         setCart(savedCart);
       }
 
@@ -38,23 +42,31 @@ export const CartProvider = ({ children }) => {
   // Save to localStorage if not logged in
   useEffect(() => {
     if (!session?.user) {
+      console.log("💾 Saving cart to localStorage:", cart);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart, session]);
 
   const syncCartToDB = async (updatedCart) => {
-    if (!session?.user) return;
+    if (!session?.user) {
+      console.log("⚠️ Not logged in, skipping DB sync.");
+      return;
+    }
+
+    console.log("⬆️ Syncing cart to DB:", updatedCart);
     try {
       await axios.post("/api/save", {
         type: "cart",
         data: updatedCart,
       });
+      console.log("✅ Cart successfully synced to DB.");
     } catch (err) {
       console.error("❌ Error syncing to DB:", err.message);
     }
   };
 
   const addToCart = (product) => {
+    console.log("➕ Adding to cart:", product);
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       let updatedCart;
@@ -75,6 +87,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (id) => {
+    console.log("❌ Removing from cart:", id);
     setCart((prev) => {
       const updatedCart = prev.filter((item) => item.id !== id);
       syncCartToDB(updatedCart);
@@ -83,6 +96,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const updateQuantity = (id, quantity) => {
+    console.log("🔁 Updating quantity:", { id, quantity });
     setCart((prev) => {
       const updatedCart = prev.map((item) =>
         item.id === id ? { ...item, quantity } : item
@@ -93,6 +107,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const clearCart = () => {
+    console.log("🧹 Clearing cart...");
     setCart([]);
     syncCartToDB([]);
   };
@@ -106,6 +121,7 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         loading,
+        ready: !loading,
       }}
     >
       {children}
