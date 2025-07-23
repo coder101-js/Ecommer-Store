@@ -10,6 +10,7 @@ export default function ProductPage() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedImg, setSelectedImg] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -120,11 +121,16 @@ export default function ProductPage() {
           </div>
 
           <button
+            disabled={isAdding}
             onClick={async () => {
-              addToCart(product); 
+              setIsAdding(true);
+              addToCart(product);
               toast.success("Added to cart!");
 
               try {
+                // Add a small delay before sync (to prevent spam + batching)
+                await new Promise((res) => setTimeout(res, 1000));
+
                 await fetch("/api/save", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
@@ -145,12 +151,43 @@ export default function ProductPage() {
                 toast.error("Failed to sync cart 🥲");
                 console.error("MongoDB save error:", err);
               }
-            }}
-            className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300 transition"
-          >
-            Add to Cart
-          </button>
 
+              setIsAdding(false);
+            }}
+            className={`mt-4 px-6 py-3 rounded-full transition font-medium flex items-center justify-center gap-2 ${
+              isAdding
+                ? "bg-gray-500 cursor-wait text-white"
+                : "bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-300"
+            }`}
+          >
+            {isAdding ? (
+              <>
+                <svg
+                  className="animate-spin h-5 w-5 text-white dark:text-black"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  />
+                </svg>
+                Adding...
+              </>
+            ) : (
+              "Add to Cart"
+            )}
+          </button>
           <div className="mt-6">
             <p className="text-sm text-gray-400">Barcode:</p>
             <code className="text-xs bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
