@@ -2,15 +2,64 @@
 import { useCart } from "./../context/CartContext";
 import CheckoutButton from "../components/CheckoutButton";
 import Image from "next/image";
+import { useState } from "react";
+import axios from "axios";
+
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity >= 1) {
-      updateQuantity(id, newQuantity);
+  const syncCartToDB = async (cartData) => {
+    try {
+      await axios.post("/api/save", {
+        type: "cart",
+        data: cartData,
+      });
+    } catch (err) {
+      console.error("🛑 Failed to sync cart:", err.message);
     }
+  };
+
+  const handleQuantityChange = async (id, newQuantity) => {
+    if (newQuantity < 1 || isUpdating) return;
+    setIsUpdating(true);
+
+    updateQuantity(id, newQuantity); // update locally
+
+    // give UI time to update before syncing
+    setTimeout(async () => {
+      await syncCartToDB(
+        cart.map((item) => ({
+          ...item,
+          quantity: item.id === id ? newQuantity : item.quantity,
+        }))
+      );
+      setIsUpdating(false);
+    }, 400);
+  };
+
+  const handleRemove = async (id) => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    removeFromCart(id);
+
+    setTimeout(async () => {
+      await syncCartToDB(cart.filter((item) => item.id !== id));
+      setIsUpdating(false);
+    }, 400);
+  };
+
+  const handleClear = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    clearCart();
+
+    setTimeout(async () => {
+      await syncCartToDB([]);
+      setIsUpdating(false);
+    }, 400);
   };
 
   return (
@@ -28,7 +77,6 @@ export default function CartPage() {
                 key={item.id}
                 className="flex flex-col md:flex-row items-center justify-between border-b pb-4"
               >
-                {/* Image & Title */}
                 <div className="flex items-center gap-4 w-full md:w-1/2">
                   {item.images?.[0] && (
                     <Image
@@ -53,7 +101,7 @@ export default function CartPage() {
                       handleQuantityChange(item.id, item.quantity - 1)
                     }
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                    disabled={item.quantity <= 1}
+                    disabled={item.quantity <= 1 || isUpdating}
                     aria-label={`Decrease quantity of ${item.title}`}
                   >
                     -
@@ -68,6 +116,7 @@ export default function CartPage() {
                     }
                     aria-label={`Quantity of ${item.title}`}
                     onFocus={(e) => e.target.select()}
+                    disabled={isUpdating}
                   />
                   <button
                     onClick={() =>
@@ -75,13 +124,15 @@ export default function CartPage() {
                     }
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
                     aria-label={`Increase quantity of ${item.title}`}
+                    disabled={isUpdating}
                   >
                     +
                   </button>
                   <button
-                    onClick={() => removeFromCart(item.id)}
+                    onClick={() => handleRemove(item.id)}
                     className="ml-2 text-red-500 hover:text-red-600"
                     aria-label={`Remove ${item.title} from cart`}
+                    disabled={isUpdating}
                   >
                     ✖
                   </button>
@@ -94,8 +145,9 @@ export default function CartPage() {
             <div className="text-xl font-bold">Total: ${total.toFixed(2)}</div>
             <div className="flex gap-3 justify-end">
               <button
-                onClick={clearCart}
+                onClick={handleClear}
                 className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
+                disabled={isUpdating}
               >
                 Clear Cart
               </button>
