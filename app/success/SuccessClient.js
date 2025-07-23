@@ -3,17 +3,23 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
+import { useSession } from "next-auth/react";
 
 export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
+  const { status } = useSession();
 
   useEffect(() => {
-    console.log("🎉 Success page loaded.");
-    localStorage.removeItem("cart");
-    console.log("🗑️ Local cart removed from localStorage");
-    clearCart();
-    console.log("🧼 clearCart() called");
-  }, []);
+    if (status === "authenticated") {
+      console.log("🎉 Success page loaded.");
+      localStorage.removeItem("cart");
+      console.log("🗑️ Local cart removed from localStorage");
+      clearCart();
+      console.log("🧼 clearCart() called");
+    } else {
+      console.log(`⏳ Session status: ${status}. Waiting...`);
+    }
+  }, [status]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen text-center">
