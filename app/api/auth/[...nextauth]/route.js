@@ -42,8 +42,6 @@ const handler = NextAuth({
     },
   },
 
-  // ✅ Debug mode to see errors in Netlify logs
-  debug: process.env.NODE_ENV === "development",
 });
 
 export { handler as GET, handler as POST };
