@@ -1,5 +1,5 @@
 "use client";
-import { useParams } from "next/navigation"; // 👈 Add this
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { StarIcon } from "@heroicons/react/24/solid";
@@ -7,7 +7,7 @@ import { useCart } from "../../context/CartContext";
 import toast from "react-hot-toast";
 
 export default function ProductPage() {
-  const { id } = useParams(); // ✅ use the hook, not props
+  const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedImg, setSelectedImg] = useState(null);
   const { addToCart } = useCart();
@@ -120,9 +120,31 @@ export default function ProductPage() {
           </div>
 
           <button
-            onClick={() => {
-              addToCart(product);
+            onClick={async () => {
+              addToCart(product); 
               toast.success("Added to cart!");
+
+              try {
+                await fetch("/api/save", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    type: "cart",
+                    data: [
+                      {
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        quantity: 1,
+                        images: product.images,
+                      },
+                    ],
+                  }),
+                });
+              } catch (err) {
+                toast.error("Failed to sync cart 🥲");
+                console.error("MongoDB save error:", err);
+              }
             }}
             className="mt-4 px-6 py-3 bg-black text-white rounded-full hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-300 transition"
           >
