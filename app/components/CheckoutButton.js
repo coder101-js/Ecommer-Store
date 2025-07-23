@@ -13,7 +13,7 @@ export default function CheckoutButton({ cart }) {
 
     try {
       const res = await axios.post("/api/checkout", { items: cart });
-      window.location.href = res.data.url; // Redirect to Stripe
+      window.location.href = res.data.url; 
     } catch (err) {
       setError("Something went wrong. Try again 🥲");
       console.error(err);
