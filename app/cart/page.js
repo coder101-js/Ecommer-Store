@@ -2,110 +2,66 @@
 import { useCart } from "./../context/CartContext";
 import CheckoutButton from "../components/CheckoutButton";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [pendingSync, setPendingSync] = useState(false);
+  const syncTimeoutRef = useRef(null);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-  const syncCartToDB = async (cartData) => {
-    try {
-      await axios.post("/api/save", {
-        type: "cart",
-        data: cartData,
-      });
-    } catch (err) {
-      console.error("🛑 Failed to sync cart:", err.message);
-    }
+  const debouncedSyncCartToDB = (cartData) => {
+    if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
+
+    setPendingSync(true);
+
+    syncTimeoutRef.current = setTimeout(async () => {
+      try {
+        await axios.post("/api/save", {
+          type: "cart",
+          data: cartData,
+        });
+      } catch (err) {
+        console.error("🛑 Failed to sync cart:", err.message);
+      } finally {
+        setPendingSync(false);
+      }
+    }, 400); // Debounce delay
   };
 
-  const handleQuantityChange = async (id, newQuantity) => {
-    if (newQuantity < 1 || isUpdating) return;
-    setIsUpdating(true);
+  const handleQuantityChange = (id, newQuantity) => {
+    if (newQuantity < 1) return;
+    updateQuantity(id, newQuantity);
 
-    updateQuantity(id, newQuantity); // update locally
-
-    // give UI time to update before syncing
-    setTimeout(async () => {
-      await syncCartToDB(
-        cart.map((item) => ({
-          ...item,
-          quantity: item.id === id ? newQuantity : item.quantity,
-        }))
-      );
-      setIsUpdating(false);
-    }, 400);
+    const updatedCart = cart.map((item) =>
+      item.id === id ? { ...item, quantity: newQuantity } : item
+    );
+    debouncedSyncCartToDB(updatedCart);
   };
 
-  const handleRemove = async (id) => {
-    if (isUpdating) return;
-    setIsUpdating(true);
+  const handleRemove = (id) => {
     removeFromCart(id);
-
-    setTimeout(async () => {
-      await syncCartToDB(cart.filter((item) => item.id !== id));
-      setIsUpdating(false);
-    }, 400);
+    debouncedSyncCartToDB(cart.filter((item) => item.id !== id));
   };
 
-  const handleClear = async () => {
-    if (isUpdating) return;
-    setIsUpdating(true);
+  const handleClear = () => {
     clearCart();
-
-    setTimeout(async () => {
-      await syncCartToDB([]);
-      setIsUpdating(false);
-    }, 400);
+    debouncedSyncCartToDB([]);
   };
 
   return (
     <div className="p-8">
-      {isUpdating && (
-        <div className="fixed inset-0 bg-white/30 dark:bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded shadow-lg">
-            <svg
-              className="animate-spin h-5 w-5 text-black dark:text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Updating cart...
-            </span>
-          </div>
-        </div>
-      )}
-
       <h1 className="text-3xl font-bold mb-6">🛒</h1>
+
       {cart.length === 0 ? (
         <p className="text-gray-700 text-4xl block text-center w-full dark:text-white">
           Your cart is empty.
         </p>
       ) : (
         <>
-          <div
-            className={`space-y-6 transition-opacity ${
-              isUpdating ? "opacity-50" : ""
-            }`}
-          >
+          <div className="space-y-6">
             {cart.map((item) => (
               <div
                 key={item.id}
@@ -135,7 +91,7 @@ export default function CartPage() {
                       handleQuantityChange(item.id, item.quantity - 1)
                     }
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                    disabled={item.quantity <= 1 || isUpdating}
+                    disabled={item.quantity <= 1}
                     aria-label={`Decrease quantity of ${item.title}`}
                   >
                     -
@@ -150,7 +106,6 @@ export default function CartPage() {
                     }
                     aria-label={`Quantity of ${item.title}`}
                     onFocus={(e) => e.target.select()}
-                    disabled={isUpdating}
                   />
                   <button
                     onClick={() =>
@@ -158,7 +113,6 @@ export default function CartPage() {
                     }
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
                     aria-label={`Increase quantity of ${item.title}`}
-                    disabled={isUpdating}
                   >
                     +
                   </button>
@@ -166,7 +120,6 @@ export default function CartPage() {
                     onClick={() => handleRemove(item.id)}
                     className="ml-2 text-red-500 hover:text-red-600"
                     aria-label={`Remove ${item.title} from cart`}
-                    disabled={isUpdating}
                   >
                     ✖
                   </button>
@@ -177,11 +130,15 @@ export default function CartPage() {
 
           <div className="mt-6 text-right space-y-2">
             <div className="text-xl font-bold">Total: ${total.toFixed(2)}</div>
+            {pendingSync && (
+              <div className="text-sm text-gray-400 dark:text-gray-500 italic">
+                Syncing with server...
+              </div>
+            )}
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleClear}
                 className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
-                disabled={isUpdating}
               >
                 Clear Cart
               </button>
