@@ -8,8 +8,12 @@ export default function SuccessClient({ name }) {
   const { clearCart } = useCart();
 
   useEffect(() => {
-    localStorage.removeItem("cart");
-    clearCart();
+    const clear = async () => {
+      await new Promise((r) => setTimeout(r, 100)); 
+      clearCart();
+      localStorage.removeItem("cart");
+    };
+    clear();
   }, []);
 
   return (
