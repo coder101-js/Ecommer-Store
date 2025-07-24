@@ -1,20 +1,8 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import { SignJWT } from "jose";
+import generateToken from "@/Utilities/module";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// ✅ Generate a secure JWT token
-async function generateToken(payload) {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET is not set");
-  
-  const encoded = new TextEncoder().encode(secret);
-  return await new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("5m")
-    .sign(encoded);
-}
 
 export async function POST(req) {
   try {

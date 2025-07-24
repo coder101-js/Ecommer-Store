@@ -9,6 +9,7 @@ import axios from "axios";
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const [pendingSync, setPendingSync] = useState(false);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const syncTimeoutRef = useRef(null);
 
@@ -32,10 +33,10 @@ export default function CartPage() {
       }
     }, 400);
   };
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      router.push("/shipping");
+      const response = await axios.get("/api/shipping/token");
     } catch (err) {
       console.error("❌ Error:", err.message);
     } finally {
@@ -64,6 +65,14 @@ export default function CartPage() {
 
   return (
     <div className="p-8">
+      {loading && (
+        <div className="min-w-screen min-h-screen flex items-center justify-center bg-gray-200/70 backdrop-blur-lg z-50">
+          <div
+            className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"
+            id="spinner"
+          ></div>
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-6">🛒</h1>
 
       {cart.length === 0 ? (
@@ -157,14 +166,14 @@ export default function CartPage() {
                 <button
                   onClick={handleCheckout}
                   disabled={loading}
-                  className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded ${
+                  className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 active:bg-blue-700 rounded hover:bg-blue-600 transition-all ${
                     loading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
                   {loading ? "Checking out..." : "Proceed to Checkout"}
                 </button>
+                {error && <p className="text-red-500 mt-2">{error}</p>}
               </>
-              {/* <CheckoutButton cart={cart} /> */}
             </div>
           </div>
         </>
