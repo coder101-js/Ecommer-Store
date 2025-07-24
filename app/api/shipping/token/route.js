@@ -3,7 +3,6 @@ import generateToken from "@/Utilities/module";
 
 export const GET = async (req) => {
   try {
-    const id = Date.now();
     const token = await generateToken({ id: Date.now() }, "1m");
     return NextResponse.json({token})
   } catch (err) {

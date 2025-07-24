@@ -37,7 +37,7 @@ export default function CartPage() {
     setLoading(true);
     try {
       const response = await axios.get("/api/shipping/token");
-      const token = response?.token;
+      const token = response?.data?.token;
       router.push(`/shipping?token=${token}`);
     } catch (err) {
       console.error("❌ Error:", err.message);
