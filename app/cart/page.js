@@ -1,6 +1,7 @@
 "use client";
 import { useCart } from "./../context/CartContext";
-import CheckoutButton from "../components/CheckoutButton";
+// import CheckoutButton from "../components/CheckoutButton";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState, useRef } from "react";
 import axios from "axios";
@@ -8,10 +9,11 @@ import axios from "axios";
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity, clearCart } = useCart();
   const [pendingSync, setPendingSync] = useState(false);
+  const [loading, setLoading] = useState(false);
   const syncTimeoutRef = useRef(null);
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
+  const router = useRouter();
   const debouncedSyncCartToDB = (cartData) => {
     if (syncTimeoutRef.current) clearTimeout(syncTimeoutRef.current);
 
@@ -28,9 +30,18 @@ export default function CartPage() {
       } finally {
         setPendingSync(false);
       }
-    }, 400); // Debounce delay
+    }, 400);
   };
-
+  const handleCheckout = () => {
+    try {
+      setLoading(true);
+      router.push("/shipping");
+    } catch (err) {
+      console.error("❌ Error:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleQuantityChange = (id, newQuantity) => {
     if (newQuantity < 1) return;
     updateQuantity(id, newQuantity);
@@ -142,7 +153,18 @@ export default function CartPage() {
               >
                 Clear Cart
               </button>
-              <CheckoutButton cart={cart} />
+              <>
+                <button
+                  onClick={handleCheckout}
+                  disabled={loading}
+                  className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded ${
+                    loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {loading ? "Checking out..." : "Proceed to Checkout"}
+                </button>
+              </>
+              {/* <CheckoutButton cart={cart} /> */}
             </div>
           </div>
         </>

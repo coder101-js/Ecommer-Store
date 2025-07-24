@@ -13,7 +13,7 @@ export default function CheckoutButton({ cart }) {
 
     try {
       const res = await axios.post("/api/checkout", { items: cart });
-      window.location.href = res.data.url; 
+      window.location.href = res.data.url;
     } catch (err) {
       setError("Something went wrong. Try again 🥲");
       console.error(err);
@@ -27,7 +27,7 @@ export default function CheckoutButton({ cart }) {
       <button
         onClick={handleCheckout}
         disabled={loading}
-        className={`bg-purple-600 text-white px-4 py-2 rounded ${
+        className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded ${
           loading ? "opacity-50 cursor-not-allowed" : ""
         }`}
       >

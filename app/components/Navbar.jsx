@@ -47,7 +47,7 @@ export default function Navbar() {
       router.push(`/shop?search=${encodeURIComponent(searchQuery)}`);
     }
   };
-
+  if (pathName === '/privacy-policy') return <></>;
   return (
     <>
       <motion.nav
