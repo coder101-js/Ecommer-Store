@@ -7,6 +7,8 @@ async function generateToken(payload, exp = "5m") {
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime(exp.toString())
+    .setIssuedAt()
+    .setExpirationTime(exp.toString())
     .sign(encoded);
 }
 
