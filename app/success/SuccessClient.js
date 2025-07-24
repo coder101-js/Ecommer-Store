@@ -11,13 +11,8 @@ export default function SuccessClient({ name }) {
 
   useEffect(() => {
     if (status === "authenticated") {
-      console.log("🎉 Success page loaded.");
       localStorage.removeItem("cart");
-      console.log("🗑️ Local cart removed from localStorage");
       clearCart();
-      console.log("🧼 clearCart() called");
-    } else {
-      console.log(`⏳ Session status: ${status}. Waiting...`);
     }
   }, [status]);
 
