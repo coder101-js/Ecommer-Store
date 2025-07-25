@@ -14,7 +14,8 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
 
   const { data: session, status } = useSession();
-  const { cart } = useCart(); // 🎯 live cart context
+  const { cart } = useCart();
+
   const [address, setAddress] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deliveryFee] = useState(160);
@@ -114,19 +115,8 @@ const Page = () => {
               <h2 className="text-xl font-bold mb-4">Enter Your Address</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                {[
-                  "firstName",
-                  "lastName",
-                  "phone",
-                  "landmark",
-                  "province",
-                  "city",
-                  "fullAddress",
-                ].map((field, i) => (
-                  <div
-                    key={i}
-                    className={field === "fullAddress" ? "sm:col-span-2" : ""}
-                  >
+                {["firstName", "lastName", "phone", "landmark", "province", "city", "fullAddress"].map((field, i) => (
+                  <div key={i} className={field === "fullAddress" ? "sm:col-span-2" : ""}>
                     <label className="block text-sm font-medium capitalize">
                       {field.replace(/([A-Z])/g, " $1")}
                     </label>
@@ -190,7 +180,7 @@ const Page = () => {
               onClick={handleClick}
               className="text-blue-500 hover:underline font-medium"
             >
-              Enter your address
+              Enter your address to continue
             </button>
           )}
         </div>
@@ -199,9 +189,6 @@ const Page = () => {
       {/* Package Details */}
       <section className="max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-md rounded-lg mt-6 p-6 border border-gray-200 dark:border-gray-700">
         <h3 className="text-md font-semibold mb-2">📦 Package 1 of 1</h3>
-        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <p>🚚 Delivery Option: Standard</p>
-        </div>
 
         {cart.map((item, idx) => (
           <div
@@ -246,8 +233,19 @@ const Page = () => {
             VAT included, where applicable
           </p>
         </div>
-        <div className="flex w-full items-center justify-center m-auto">
-          <CheckoutButton cart={cart} />
+
+        {/* Block Checkout if no address */}
+        <div className="flex w-full items-center justify-center mt-6">
+          {address ? (
+            <CheckoutButton cart={cart} />
+          ) : (
+            <button
+              onClick={handleClick}
+              className="px-6 py-3 text-white bg-red-500 hover:bg-red-600 rounded-lg"
+            >
+              Enter Address First 🛑
+            </button>
+          )}
         </div>
       </section>
     </main>
