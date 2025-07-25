@@ -4,9 +4,34 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import CheckoutButton from "../components/CheckoutButton";
+import { useCart } from "@/context/CartContext";
+import { useRouter } from "next/navigation";
 
 const Page = ({ totalItems = 1, itemInfo = [] }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const validRequest = async () => {
+      try {
+        setLoading(true);
+        const { data } = await axios.get("/api/shipping/valid");
+        const isValid = data?.Valid;
+        if (!isValid) {
+          router.push("/cart");
+          return false;
+        }
+      } catch (err) {
+        router.push("/cart?shippingError");
+        console.error("❌ Error:", err.message);
+      } finally {
+        setloading(false);
+      }
+    };
+    validRequest();
+  }, []);
   const { data: session, status } = useSession();
+  const { cart } = useCart();
 
   const [address, setAddress] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -66,11 +91,22 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
   }, [session?.user?.email]);
 
   if (status === "loading")
-    return <p className="p-6 text-gray-700 dark:text-white">Loading...</p>;
+    return (
+      <p className="p-6 text-gray-700 dark:text-white text-center text-4xl">
+        Loading...
+      </p>
+    );
 
   return (
     <main className="w-full min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6 mt-12">
-      {/* Modal */}
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-lg">
+          <div
+            className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"
+            id="spinner"
+          ></div>
+        </div>
+      )}
       <AnimatePresence>
         {modalOpen && (
           <motion.div
@@ -258,6 +294,9 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             VAT included, where applicable
           </p>
+        </div>
+        <div className="flex w-full items-center justify-center m-auto">
+          <CheckoutButton cart={cart} />
         </div>
       </section>
     </main>

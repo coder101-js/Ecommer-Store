@@ -24,16 +24,18 @@ export default function CheckoutButton({ cart }) {
 
   return (
     <>
-      <button
-        onClick={handleCheckout}
-        disabled={loading}
-        className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded ${
-          loading ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-      >
-        {loading ? "Redirecting..." : "Checkout 💳"}
-      </button>
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      <div className="flex flex-col">
+        <button
+          onClick={handleCheckout}
+          disabled={loading}
+          className={`bg-blue-600 dark:bg-blue-500 text-white px-4 py-2 rounded ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? "Redirecting..." : "Checkout 💳"}
+        </button>
+        {error ? <p className="text-red-500 mt-2">{error}</p>: <p className="mt-2"></p>}
+      </div>
     </>
   );
 }

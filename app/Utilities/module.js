@@ -8,8 +8,17 @@ async function generateToken(payload, exp = "5m") {
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime(exp.toString())
     .setIssuedAt()
-    .setExpirationTime(exp.toString())
     .sign(encoded);
+}
+export async function verifyToken(token) {
+  try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    return payload;
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return null;
+  }
 }
 
 export default generateToken;

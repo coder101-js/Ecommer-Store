@@ -68,7 +68,7 @@ export default function CartPage() {
   return (
     <div className="p-8">
       {loading && (
-        <div className="min-w-screen min-h-screen flex items-center justify-center bg-gray-200/70 backdrop-blur-lg z-50 absolute inset-0">
+        <div className="min-w-screen min-h-screen flex items-center justify-center bg-transparent backdrop-blur-lg z-50 absolute inset-0">
           <div
             className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"
             id="spinner"
