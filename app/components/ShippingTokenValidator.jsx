@@ -17,7 +17,7 @@ export default function ShippingTokenValidator() {
         if (!token) throw new Error("Missing token");
 
         const { data } = await axios.get(`/api/shipping/valid?token=${token}`);
-        if (!data?.Valid) {
+        if (!data?.valid) {
           router.push("/cart?shippingError");
         }
       } catch (err) {
