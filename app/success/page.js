@@ -11,7 +11,6 @@ export const metadata = {
 };
 
 
-
 export default async function SuccessPage({ searchParams }) {
   const token = searchParams.token;
 

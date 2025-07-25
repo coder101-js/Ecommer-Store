@@ -49,12 +49,14 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
     setAddress(fullAddr);
     setModalOpen(false);
 
-    // Optional: send to backend
-    // await axios.post("/api/saveAddress", {
-    //   email: session?.user?.email,
-    //   address: fullAddr,
-    //   phone: form.phone,
-    // });
+    await axios.post("/api/save", {
+      type: "address",
+      data: {
+        email: session?.user?.email,
+        address: fullAddr,
+        phone: form.phone,
+      },
+    });
   };
 
   // useEffect(() => {
