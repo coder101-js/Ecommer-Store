@@ -17,7 +17,9 @@ export async function POST(req) {
   const client = await clientPromise;
   const db = client.db("Ecommer_user");
 
-  const user = await db.collection("users").findOne({ email: session.user.email });
+  const user = await db
+    .collection("users")
+    .findOne({ email: session.user.email });
   if (!user) {
     return new Response(JSON.stringify({ message: "User not found" }), {
       status: 404,
@@ -27,11 +29,13 @@ export async function POST(req) {
   try {
     switch (type) {
       case "cart":
-        await db.collection("carts").updateOne(
-          { userId: user._id },
-          { $set: { items: data, updatedAt: new Date() } },
-          { upsert: true }
-        );
+        await db
+          .collection("carts")
+          .updateOne(
+            { userId: user._id },
+            { $set: { items: data, updatedAt: new Date() } },
+            { upsert: true }
+          );
         break;
 
       case "order":
@@ -102,7 +106,9 @@ export async function GET(req) {
   const client = await clientPromise;
   const db = client.db("Ecommer_user");
 
-  const user = await db.collection("users").findOne({ email: session.user.email });
+  const user = await db
+    .collection("users")
+    .findOne({ email: session.user.email });
   if (!user) {
     return new Response(JSON.stringify({ message: "User not found" }), {
       status: 404,
@@ -111,20 +117,55 @@ export async function GET(req) {
 
   switch (type) {
     case "cart":
-      const cartDoc = await db.collection("carts").findOne({ userId: user._id });
+      const cartDoc = await db
+        .collection("carts")
+        .findOne({ userId: user._id });
       return new Response(JSON.stringify(cartDoc || { items: [] }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
 
-    case "address":
-      const addressDoc = await db.collection("addresses").findOne({ userId: user._id });
+    case "address": {
+      const { searchParams } = new URL(req.url);
+      const email = searchParams.get("email");
+
+      // ⛔ No email = no access
+      if (!email) {
+        return NextResponse.json(
+          { message: "Email is required" },
+          { status: 400 }
+        );
+      }
+
+      // ✅ Check if the session email matches the requested one
+      if (session.user.email !== email) {
+        return NextResponse.json(
+          { message: "Unauthorized access 🚫" },
+          { status: 403 }
+        );
+      }
+
+
+      const user = await db.collection("users").findOne({ email });
+
+      if (!user) {
+        return NextResponse.json(
+          { message: "User not found" },
+          { status: 404 }
+        );
+      }
+
+      const addressDoc = await db.collection("addresses").findOne({
+        userId: user._id,
+      });
+
       if (!addressDoc) {
         return NextResponse.json({ exist: false });
       }
 
       const { address, phone } = addressDoc;
       return NextResponse.json({ address, phone, exist: true });
+    }
 
     default:
       return new Response(JSON.stringify({ message: "Invalid type" }), {
