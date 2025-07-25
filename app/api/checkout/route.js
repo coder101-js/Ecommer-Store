@@ -3,9 +3,12 @@ import generateToken from "@/Utilities/module";
 
 export async function POST(req) {
   try {
-    // ✅ ESM-safe dynamic import of Stripe
+    // 👇 Dynamic ESM-safe import
     const { default: Stripe } = await import("stripe");
+
+    // ✅ Initialize Stripe client inside the handler
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2024-08-01", // or your preferred version
     });
 
     const body = await req.json();
@@ -33,7 +36,7 @@ export async function POST(req) {
           product_data: {
             name: item.title,
           },
-          unit_amount: Math.round(item.price * 100), // price in cents
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity,
       };
