@@ -15,7 +15,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
 
   const { data: session, status } = useSession();
   const { cart } = useCart();
-
+  console.log(cart)
   const [address, setAddress] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deliveryFee] = useState(160);
@@ -64,7 +64,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
       const getAddress = async () => {
         try {
           const { data } = await axios.get(
-            `/api/save?type=address&email=${session.user.email}`
+            `/api/save?type=address&email=${session.user.email}`,
           );
           if (data?.address) setAddress(data.address);
         } catch (err) {
@@ -74,7 +74,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
       getAddress();
     }
   }, [session?.user?.email]);
-
+  
   if (status === "loading")
     return (
       <p className="p-6 text-gray-700 dark:text-white text-center text-4xl">
