@@ -74,21 +74,21 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
     // });
   };
 
-  useEffect(() => {
-    if (session?.user?.email) {
-      const getAddress = async () => {
-        try {
-          const { data } = await axios.get(
-            `/api/getAddress?email=${session.user.email}`
-          );
-          if (data?.address) setAddress(data.address);
-        } catch (err) {
-          console.error("❌ Error fetching address:", err.message);
-        }
-      };
-      getAddress();
-    }
-  }, [session?.user?.email]);
+  // useEffect(() => {
+  //   if (session?.user?.email) {
+  //     const getAddress = async () => {
+  //       try {
+  //         const { data } = await axios.get(
+  //           `/api/getAddress?email=${session.user.email}`
+  //         );
+  //         if (data?.address) setAddress(data.address);
+  //       } catch (err) {
+  //         console.error("❌ Error fetching address:", err.message);
+  //       }
+  //     };
+  //     getAddress();
+  //   }
+  // }, [session?.user?.email]);
 
   if (status === "loading")
     return (

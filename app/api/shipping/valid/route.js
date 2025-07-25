@@ -7,11 +7,11 @@ export const GET = (req) => {
     const token = searchParams.get("token");
     console.log(token)
     if (!token) {
-      return NextResponse.json({ valid: false });
+      return NextResponse.json({ valid: false ,token});
     }
     const isValid = verifyToken(token);
     if (!isValid) {
-      return NextResponse.json({ valid: false });
+      return NextResponse.json({ valid: false,token });
     }
     return NextResponse.json({ valid: true });
   } catch (err) {
