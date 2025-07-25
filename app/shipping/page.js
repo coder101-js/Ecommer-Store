@@ -6,32 +6,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import CheckoutButton from "../components/CheckoutButton";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import ShippingTokenValidator from "@/components/ShippingTokenValidator";
+import { Suspense } from "react";
 
 const Page = ({ totalItems = 1, itemInfo = [] }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const searchParmas = useSearchParams()
 
-  useEffect(() => {
-    const validRequest = async () => {
-      try {
-        setLoading(true);
-        const { data } = await axios.get(`/api/shipping/valid?${searchParmas.get('token')}`);
-        const isValid = data?.Valid;
-        if (!isValid) {
-          router.push("/cart?shippingError");
-          return false;
-        }
-      } catch (err) {
-        router.push("/cart?shippingError");
-        console.error("❌ Error:", err.message);
-      } finally {
-        setloading(false);
-      }
-    };
-    validRequest();
-  }, []);
   const { data: session, status } = useSession();
   const { cart } = useCart();
 
@@ -101,6 +82,10 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
 
   return (
     <main className="w-full min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6 mt-12">
+      <Suspense fallback={null}>
+        <ShippingTokenValidator setLoading={setLoading} />
+      </Suspense>
+
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-lg">
           <div
