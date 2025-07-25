@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import generateToken from "@/Utilities/module";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   try {
+    // ✅ ESM-safe dynamic import of Stripe
+    const { default: Stripe } = await import("stripe");
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    });
+
     const body = await req.json();
 
     const token = await generateToken({
@@ -31,7 +33,7 @@ export async function POST(req) {
           product_data: {
             name: item.title,
           },
-          unit_amount: Math.round(item.price * 100), // ✅ Ensure integer
+          unit_amount: Math.round(item.price * 100), // price in cents
         },
         quantity: item.quantity,
       };
@@ -47,7 +49,7 @@ export async function POST(req) {
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
-    console.error("🔥 Stripe Checkout Error:", err.message);
+    console.error("🔥 Stripe Checkout Error:", err);
     return NextResponse.json(
       { error: "Checkout session failed", message: err.message },
       { status: 500 }
