@@ -5,6 +5,7 @@ export const GET = (req) => {
   try {
     const searchParams = req.nextUrl.searchParams;
     const token = searchParams.get("token");
+    console.log(token)
     if (!token) {
       return NextResponse.json({ valid: false });
     }

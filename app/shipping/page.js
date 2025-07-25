@@ -18,7 +18,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
         const { data } = await axios.get("/api/shipping/valid");
         const isValid = data?.Valid;
         if (!isValid) {
-          router.push("/cart");
+          router.push("/cart?shippingError");
           return false;
         }
       } catch (err) {
