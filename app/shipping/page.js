@@ -18,7 +18,7 @@ const Page = () => {
 
   const [address, setAddress] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [deliveryFee] = useState(160);
+  const [deliveryFee] = useState(0.75);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -202,7 +202,7 @@ const Page = () => {
               </p>
             </div>
             <div className="text-right text-sm">
-              <p>Rs. {item.price}</p>
+              <p>$ {item.price}</p>
               <p>Qty: {item.quantity}</p>
             </div>
           </div>
@@ -219,15 +219,15 @@ const Page = () => {
             <span>
               Items Total ({totalItems} item{totalItems !== 1 ? "s" : ""})
             </span>
-            <span>Rs. {itemsTotal}</span>
+            <span>$ {itemsTotal}</span>
           </div>
           <div className="flex justify-between">
             <span>Delivery Fee</span>
-            <span>Rs. {deliveryFee}</span>
+            <span>$ {deliveryFee}</span>
           </div>
           <div className="flex justify-between font-bold border-t pt-2 text-gray-900 dark:text-white">
             <span>Total</span>
-            <span>Rs. {total}</span>
+            <span>$ {total}</span>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             VAT included, where applicable
