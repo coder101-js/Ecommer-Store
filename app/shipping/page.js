@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,15 +8,13 @@ import CheckoutButton from "../components/CheckoutButton";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import ShippingTokenValidator from "@/components/ShippingTokenValidator";
-import { Suspense } from "react";
 
-const Page = ({ totalItems = 1, itemInfo = [] }) => {
+const Page = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const { data: session, status } = useSession();
-  const { cart } = useCart();
-  console.log(cart)
+  const { cart } = useCart(); // 🎯 live cart context
   const [address, setAddress] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [deliveryFee] = useState(160);
@@ -30,10 +29,11 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
     landmark: "",
   });
 
-  const itemsTotal = itemInfo.reduce(
-    (acc, item) => acc + item.price * item.qty,
+  const itemsTotal = cart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
   const total = itemsTotal + deliveryFee;
 
   const handleClick = () => setModalOpen(true);
@@ -64,7 +64,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
       const getAddress = async () => {
         try {
           const { data } = await axios.get(
-            `/api/save?type=address&email=${session.user.email}`,
+            `/api/save?type=address&email=${session.user.email}`
           );
           if (data?.address) setAddress(data.address);
         } catch (err) {
@@ -74,13 +74,14 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
       getAddress();
     }
   }, [session?.user?.email]);
-  
-  if (status === "loading")
+
+  if (status === "loading") {
     return (
       <p className="p-6 text-gray-700 dark:text-white text-center text-4xl">
         Loading...
       </p>
     );
+  }
 
   return (
     <main className="w-full min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6 mt-12">
@@ -90,12 +91,11 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
 
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-lg">
-          <div
-            className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"
-            id="spinner"
-          ></div>
+          <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
         </div>
       )}
+
+      {/* Address Modal */}
       <AnimatePresence>
         {modalOpen && (
           <motion.div
@@ -114,78 +114,40 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
               <h2 className="text-xl font-bold mb-4">Enter Your Address</h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-medium">
-                    First Name
-                  </label>
-                  <input
-                    name="firstName"
-                    placeholder="First Name"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Last Name</label>
-                  <input
-                    name="lastName"
-                    placeholder="Last Name"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium">
-                    Phone Number
-                  </label>
-                  <input
-                    name="phone"
-                    placeholder="Please enter your phone number"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium">
-                    Landmark (Optional)
-                  </label>
-                  <input
-                    name="landmark"
-                    placeholder="E.g. beside train station"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Province / Region
-                  </label>
-                  <input
-                    name="province"
-                    placeholder="Your province"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">City</label>
-                  <input
-                    name="city"
-                    placeholder="Your city"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium">Address</label>
-                  <textarea
-                    name="fullAddress"
-                    placeholder="Please enter your full address"
-                    className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
-                    rows={2}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                {[
+                  "firstName",
+                  "lastName",
+                  "phone",
+                  "landmark",
+                  "province",
+                  "city",
+                  "fullAddress",
+                ].map((field, i) => (
+                  <div
+                    key={i}
+                    className={field === "fullAddress" ? "sm:col-span-2" : ""}
+                  >
+                    <label className="block text-sm font-medium capitalize">
+                      {field.replace(/([A-Z])/g, " $1")}
+                    </label>
+                    {field === "fullAddress" ? (
+                      <textarea
+                        name={field}
+                        rows={2}
+                        placeholder="Please enter your full address"
+                        className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        onChange={handleInputChange}
+                      />
+                    ) : (
+                      <input
+                        name={field}
+                        placeholder={`Enter your ${field}`}
+                        className="w-full mt-1 border px-3 py-2 rounded text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600"
+                        onChange={handleInputChange}
+                      />
+                    )}
+                  </div>
+                ))}
               </div>
 
               <div className="flex justify-end gap-3">
@@ -241,20 +203,20 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
           <p>🚚 Delivery Option: Standard</p>
         </div>
 
-        {itemInfo.map((item, idx) => (
+        {cart.map((item, idx) => (
           <div
             key={idx}
             className="flex items-start gap-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 mb-4"
           >
             <div className="flex-1">
-              <p className="font-semibold">{item.name}</p>
+              <p className="font-semibold">{item.title}</p>
               <p className="text-sm text-gray-500 dark:text-gray-300">
-                {item.brand}, Color: {item.color}
+                {item.brand}, Category: {item.category}
               </p>
             </div>
             <div className="text-right text-sm">
               <p>Rs. {item.price}</p>
-              <p>Qty: {item.qty}</p>
+              <p>Qty: {item.quantity}</p>
             </div>
           </div>
         ))}
@@ -268,7 +230,7 @@ const Page = ({ totalItems = 1, itemInfo = [] }) => {
         <div className="text-sm space-y-2">
           <div className="flex justify-between">
             <span>
-              Items Total ({totalItems} item{totalItems > 1 ? "s" : ""})
+              Items Total ({totalItems} item{totalItems !== 1 ? "s" : ""})
             </span>
             <span>Rs. {itemsTotal}</span>
           </div>
