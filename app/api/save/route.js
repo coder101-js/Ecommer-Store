@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "../auth/[...nextauth]/route";
 import clientPromise from "../../lib/mongodb";
 import { ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
 
 // Handle POST requests (add/update data)
 export async function POST(req) {
@@ -16,7 +17,9 @@ export async function POST(req) {
   const client = await clientPromise;
   const db = client.db("Ecommer_user");
 
-  const user = await db.collection("users").findOne({ email: session.user.email });
+  const user = await db
+    .collection("users")
+    .findOne({ email: session.user.email });
   if (!user) {
     return new Response(JSON.stringify({ message: "User not found" }), {
       status: 404,
@@ -26,11 +29,13 @@ export async function POST(req) {
   try {
     switch (type) {
       case "cart":
-        await db.collection("carts").updateOne(
-          { userId: user._id },
-          { $set: { items: data, updatedAt: new Date() } },
-          { upsert: true }
-        );
+        await db
+          .collection("carts")
+          .updateOne(
+            { userId: user._id },
+            { $set: { items: data, updatedAt: new Date() } },
+            { upsert: true }
+          );
         break;
 
       case "order":
@@ -46,10 +51,24 @@ export async function POST(req) {
         break;
 
       case "address":
+        const addressCount = await db.collection("addresses").countDocuments({
+          userId: user._id,
+        });
+
+        if (addressCount >= 5) {
+          return new Response(
+            JSON.stringify({
+              message: "You can only have up to 5 addresses ",
+            }),
+            { status: 403 }
+          );
+        }
+
         const result = await db.collection("addresses").insertOne({
           userId: user._id,
           ...data,
         });
+
         return new Response(JSON.stringify({ addressId: result.insertedId }), {
           status: 201,
         });
@@ -74,15 +93,22 @@ export async function POST(req) {
 
 // Handle GET requests (read data like cart)
 export async function GET(req) {
+  
   const session = await getServerSession(authOptions);
-  if (!session) return new Response("Unauthorized", { status: 401 });
+  if (!session) {
+    return new Response(JSON.stringify({ message: "Not authenticated" }), {
+      status: 401,
+    });
+  }
 
   const url = new URL(req.url);
   const type = url.searchParams.get("type"); // e.g. /api/save?type=cart
 
   const client = await clientPromise;
   const db = client.db("Ecommer_user");
-  const user = await db.collection("users").findOne({ email: session.user.email });
+  const user = await db
+    .collection("users")
+    .findOne({ email: session.user.email });
 
   if (!user) {
     return new Response(JSON.stringify({ message: "User not found" }), {
@@ -92,11 +118,23 @@ export async function GET(req) {
 
   switch (type) {
     case "cart":
-      const cartDoc = await db.collection("carts").findOne({ userId: user._id });
+      const cartDoc = await db
+        .collection("carts")
+        .findOne({ userId: user._id });
       return new Response(JSON.stringify(cartDoc || { items: [] }), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       });
+    case "address":
+      const { searchParams } = new URL(req.url);
+      const email = searchParams.get("email");
+      const { address, phone } = await db
+        .collection("addresses")
+        .findOne({ email });
+      if (!address) {
+        return NextResponse.json({ exist: false });
+      }
+      return NextResponse.json({ address, phone, exist: true });
 
     default:
       return new Response(JSON.stringify({ message: "Invalid type" }), {
