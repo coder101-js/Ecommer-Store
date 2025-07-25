@@ -6,16 +6,18 @@ import { motion, AnimatePresence } from "framer-motion";
 import CheckoutButton from "../components/CheckoutButton";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 const Page = ({ totalItems = 1, itemInfo = [] }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const searchParmas = useSearchParams()
 
   useEffect(() => {
     const validRequest = async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get("/api/shipping/valid");
+        const { data } = await axios.get(`/api/shipping/valid?${searchParmas.get('token')}`);
         const isValid = data?.Valid;
         if (!isValid) {
           router.push("/cart?shippingError");
