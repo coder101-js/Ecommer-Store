@@ -5,7 +5,6 @@
 .max-h-screen{
   max-height: 100vh;
 }
-/* Thin & modern scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -22,8 +21,7 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
-/* Thin & modern scrollbar */
+/* Thin & modern dark scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -32,16 +30,18 @@
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: #18181b; /* modern dark black */
+  background: linear-gradient(180deg, #2d2d2d, #1a1a1a);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #27272a; /* slightly lighter on hover */
+  background: #3d3d3d; /* slightly lighter on hover */
 }
 
-/* Firefox support */
+/* Firefox */
 * {
-  scrollbar-color: #18181b #0f172a;
+  scrollbar-width: thin;
+  scrollbar-color: #2d2d2d transparent;
 }
