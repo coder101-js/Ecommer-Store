@@ -8,12 +8,10 @@ const handler = NextAuth({
     strategy: "jwt",
   },
 
-  // ✅ Adapter for MongoDB
   adapter: MongoDBAdapter(clientPromise, {
     databaseName: "Ecommer_user",
   }),
 
-  // ✅ Google OAuth provider
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,

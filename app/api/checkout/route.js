@@ -24,7 +24,6 @@ export async function POST(req) {
       if (!item?.price || !item?.title || !item?.quantity) {
         throw new Error("Invalid item data in cart");
       }
-
       return {
         price_data: {
           currency: "usd",
